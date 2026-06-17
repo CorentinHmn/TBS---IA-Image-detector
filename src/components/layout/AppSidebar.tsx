@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ScanSearch, History, Key, Settings, CreditCard, LogOut, Shield } from "lucide-react";
+import { LayoutDashboard, ScanSearch, History, Key, Settings, LogOut, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { mockUser } from "@/lib/mock-data";
 
@@ -11,7 +11,6 @@ const nav = [
   { href: "/history",   icon: History,          label: "History"   },
   { href: "/api-keys",  icon: Key,              label: "API Keys"  },
   { href: "/settings",  icon: Settings,         label: "Settings"  },
-  { href: "/billing",   icon: CreditCard,       label: "Billing"   },
 ];
 
 export function AppSidebar() {

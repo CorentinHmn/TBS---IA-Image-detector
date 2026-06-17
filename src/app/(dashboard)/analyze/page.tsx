@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { UploadDropzone } from "@/components/analysis/UploadDropzone";
 import { LoadingAnalysisSteps } from "@/components/analysis/LoadingAnalysisSteps";
@@ -8,9 +8,27 @@ import { RiskBadge } from "@/components/analysis/RiskBadge";
 import { SignalBreakdown } from "@/components/analysis/SignalBreakdown";
 import { analyzeImageMock } from "@/lib/services/analysis.service";
 import type { Analysis } from "@/types";
-import { ScanSearch, Download, Save, RotateCcw, Info } from "lucide-react";
+import { ScanSearch, Download, Save, RotateCcw, Info, Zap, Eye } from "lucide-react";
 
 type Stage = "idle" | "selected" | "analyzing" | "result" | "error";
+type ModelId = "iris" | "argus";
+
+const MODELS: { id: ModelId; name: string; tagline: string; badge: string; icon: React.ElementType }[] = [
+  {
+    id: "iris",
+    name: "Iris",
+    tagline: "Fast · Lightweight · Real-time",
+    badge: "Speed",
+    icon: Zap,
+  },
+  {
+    id: "argus",
+    name: "Argus",
+    tagline: "Deep forensic · Multi-signal · High accuracy",
+    badge: "Precision",
+    icon: Eye,
+  },
+];
 
 export default function AnalyzePage() {
   const [stage, setStage] = useState<Stage>("idle");
@@ -18,6 +36,7 @@ export default function AnalyzePage() {
   const [preview, setPreview] = useState<string | null>(null);
   const [result, setResult]   = useState<Analysis | null>(null);
   const [errMsg, setErrMsg]   = useState<string | null>(null);
+  const [model, setModel]     = useState<ModelId>("iris");
 
   const handleSelect = (f: File) => {
     setFile(f); setPreview(URL.createObjectURL(f)); setStage("selected"); setResult(null); setErrMsg(null);
@@ -45,10 +64,43 @@ export default function AnalyzePage() {
 
       {(stage === "idle" || stage === "selected") && (
         <>
+          {/* Model selector */}
+          <div>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-3">Detection model</p>
+            <div className="grid grid-cols-2 gap-3">
+              {MODELS.map((m) => {
+                const Icon = m.icon;
+                const active = model === m.id;
+                return (
+                  <button
+                    key={m.id}
+                    onClick={() => setModel(m.id)}
+                    className={`flex items-start gap-3 p-4 rounded-xl border text-left transition-all ${
+                      active
+                        ? "border-primary bg-primary/5 ring-1 ring-primary/30"
+                        : "border-border bg-card hover:border-primary/40 hover:bg-muted/40"
+                    }`}
+                  >
+                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${active ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"}`}>
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className={`text-sm font-semibold ${active ? "text-primary" : "text-foreground"}`}>{m.name}</span>
+                        <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${active ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"}`}>{m.badge}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground leading-relaxed">{m.tagline}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <UploadDropzone onFileSelect={handleSelect} selectedFile={file} preview={preview} onClear={handleClear} />
           {stage === "selected" && (
             <Button onClick={handleAnalyze} className="w-full" size="lg">
-              <ScanSearch className="w-4 h-4 mr-2" />Analyze image
+              <ScanSearch className="w-4 h-4 mr-2" />Analyze with {MODELS.find((m) => m.id === model)?.name}
             </Button>
           )}
         </>
@@ -73,7 +125,8 @@ export default function AnalyzePage() {
           <div className="bg-card rounded-xl border border-border p-6 space-y-5">
             <div className="flex items-start justify-between gap-4 flex-wrap">
               <div>
-                <p className="text-xs text-muted-foreground mb-2">{result.fileName}</p>
+                <p className="text-xs text-muted-foreground mb-1">{result.fileName}</p>
+                <p className="text-xs text-primary mb-2">via {MODELS.find((m) => m.id === model)?.name}</p>
                 <RiskBadge level={result.riskLevel} size="lg" />
               </div>
               <div className="flex items-center gap-2">

@@ -2,8 +2,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Shield, ScanSearch, FileBarChart, ChevronRight, Check, Newspaper, ShoppingBag, GraduationCap, MessageSquareWarning, Building2, ShieldCheck } from "lucide-react";
-import { mockPricingPlans } from "@/lib/mock-data";
-import { cn } from "@/lib/utils";
 
 export default function LandingPage() {
   return (
@@ -118,35 +116,6 @@ export default function LandingPage() {
                   <h3 className="text-sm font-semibold mb-1">{t.title}</h3>
                   <p className="text-xs text-[#8B92A8]">{t.desc}</p>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing */}
-      <section className="py-20 px-6 border-t border-[#1E2028]">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-xs font-semibold text-[#4F6BFF] uppercase tracking-widest text-center mb-4">Pricing</p>
-          <h2 className="text-3xl font-bold text-center mb-12">Simple, transparent pricing</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {mockPricingPlans.map((plan) => (
-              <div key={plan.id} className={cn("p-6 rounded-xl border space-y-5", plan.current ? "border-[#4F6BFF] bg-[#4F6BFF]/5" : "border-[#1E2028] bg-[#111318]")}>
-                {plan.current && <span className="text-xs font-medium text-[#4F6BFF] bg-[#4F6BFF]/10 px-2 py-0.5 rounded-full">Most popular</span>}
-                <div>
-                  <p className="text-base font-bold">{plan.name}</p>
-                  <p className="text-3xl font-bold mt-1">${plan.price}<span className="text-sm font-normal text-[#8B92A8]">/mo</span></p>
-                </div>
-                <ul className="space-y-2">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-xs text-[#8B92A8]">
-                      <Check className="w-3.5 h-3.5 text-[#00D4AA] mt-0.5 flex-shrink-0" />{f}
-                    </li>
-                  ))}
-                </ul>
-                <Button asChild className={cn("w-full text-sm", plan.current ? "bg-[#4F6BFF] hover:bg-[#4F6BFF]/90 text-white" : "border border-[#1E2028] bg-transparent hover:bg-[#1E2028] text-[#F0F2F8]")}>
-                  <Link href="/signup">Get started</Link>
-                </Button>
               </div>
             ))}
           </div>
