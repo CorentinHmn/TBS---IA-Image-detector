@@ -9,13 +9,20 @@ function getRiskLevel(p: number): RiskLevel {
   return "low";
 }
 
+function rnd(min: number, max: number) { return Math.floor(Math.random() * (max - min) + min); }
+
 function mockSignals(): AnalysisSignal[] {
   return [
-    { id: crypto.randomUUID(), name: "Texture Inconsistencies", score: Math.floor(Math.random() * 40 + 55), status: "detected", description: "Unnatural texture patterns detected inconsistent with optical lens characteristics." },
-    { id: crypto.randomUUID(), name: "Metadata Anomalies", score: Math.floor(Math.random() * 50 + 30), status: "detected", description: "EXIF metadata shows inconsistencies with claimed capture device." },
-    { id: crypto.randomUUID(), name: "Lighting Coherence", score: Math.floor(Math.random() * 40 + 10), status: "inconclusive", description: "Lighting sources appear mostly consistent with minor anomalies." },
-    { id: crypto.randomUUID(), name: "Facial / Object Artifacts", score: Math.floor(Math.random() * 35 + 60), status: "detected", description: "High-frequency artifacts near object edges typical of GAN upsampling." },
-    { id: crypto.randomUUID(), name: "Compression Pattern Mismatch", score: Math.floor(Math.random() * 50 + 20), status: "inconclusive", description: "DCT coefficient distribution partially matches synthetic generation signatures." },
+    { id: crypto.randomUUID(), model: "iris", name: "Color Distribution",     score: rnd(10, 45),  status: "not_detected", description: "Saturation uniformity and RGB channel balance. AI images tend to have unnaturally smooth or vivid color distributions." },
+    { id: crypto.randomUUID(), model: "iris", name: "Noise & Texture Profile", score: rnd(35, 65),  status: "inconclusive", description: "High-frequency noise residual and 8-neighbour texture smoothness. AI images often lack natural sensor noise." },
+    { id: crypto.randomUUID(), model: "iris", name: "Metadata Consistency",   score: rnd(40, 70),  status: "inconclusive", description: "EXIF data presence and camera fingerprint. AI-generated images typically lack authentic capture metadata." },
+    { id: crypto.randomUUID(), model: "iris", name: "Compression Artifacts",  score: rnd(20, 55),  status: "not_detected", description: "JPEG/WebP DCT coefficient distribution. Synthetic images show atypical compression patterns vs. real camera output." },
+    { id: crypto.randomUUID(), model: "iris", name: "Edge Sharpness Profile", score: rnd(30, 60),  status: "inconclusive", description: "Sub-pixel edge sharpness analysis. GAN and diffusion upsampling leave characteristic over-sharpening signatures." },
+    { id: crypto.randomUUID(), model: "omni", name: "Deep Neural Analysis",    score: rnd(55, 95),  status: "detected",     description: "ConvNeXt-Tiny model trained on 40 000 labelled images. Primary detection signal via learned feature extraction." },
+    { id: crypto.randomUUID(), model: "omni", name: "Frequency Signature (FFT)", score: rnd(60, 99), status: "detected",    description: "DCT/FFT energy distribution across frequency bands. Generative models leave characteristic spectral footprints." },
+    { id: crypto.randomUUID(), model: "omni", name: "GAN Fingerprint",         score: rnd(50, 90),  status: "detected",     description: "Residual traces of generative model upsampling detectable in high-frequency bands via spectral analysis." },
+    { id: crypto.randomUUID(), model: "omni", name: "Semantic Consistency",    score: rnd(40, 75),  status: "inconclusive", description: "Cross-region semantic coherence and object boundary plausibility. Diffusion models sometimes produce illogical spatial relations." },
+    { id: crypto.randomUUID(), model: "omni", name: "Facial & Object Artifacts", score: rnd(55, 92), status: "detected",   description: "High-frequency artifacts near edges and anatomical regions. Characteristic of diffusion model and GAN synthesis." },
   ];
 }
 
