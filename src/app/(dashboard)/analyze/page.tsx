@@ -11,7 +11,7 @@ import type { Analysis } from "@/types";
 import { ScanSearch, Download, Save, RotateCcw, Info, Zap, Eye } from "lucide-react";
 
 type Stage = "idle" | "selected" | "analyzing" | "result" | "error";
-type ModelId = "iris" | "argus";
+type ModelId = "iris" | "omni";
 
 const MODELS: { id: ModelId; name: string; tagline: string; badge: string; icon: React.ElementType }[] = [
   {
@@ -22,7 +22,7 @@ const MODELS: { id: ModelId; name: string; tagline: string; badge: string; icon:
     icon: Zap,
   },
   {
-    id: "argus",
+    id: "omni",
     name: "Omni",
     tagline: "Deep forensic · Multi-signal · High accuracy",
     badge: "Precision",
@@ -157,7 +157,7 @@ export default function AnalyzePage() {
           )}
 
           <div className="bg-card rounded-xl border border-border p-6">
-            <SignalBreakdown signals={result.signals} />
+            <SignalBreakdown signals={result.signals.filter((s) => s.model === model)} />
           </div>
 
           <Button variant="outline" onClick={handleClear} className="w-full">

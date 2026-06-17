@@ -7,6 +7,7 @@ export interface AnalysisSignal {
   score: number;
   status: "detected" | "not_detected" | "inconclusive";
   description: string;
+  model: "iris" | "omni";
 }
 
 export interface Analysis {
