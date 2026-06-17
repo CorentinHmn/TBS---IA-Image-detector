@@ -9,3 +9,4 @@ joblib==1.4.2
 torch==2.5.1
 torchvision==0.20.1
 pydantic==2.10.4
+huggingface_hub==0.27.1

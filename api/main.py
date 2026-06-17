@@ -16,6 +16,7 @@ import numpy as np
 import torch
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from huggingface_hub import hf_hub_download
 from PIL import Image, ImageFile
 from pydantic import BaseModel
 from torch import nn
@@ -26,9 +27,7 @@ from feature_extraction import extract_features, features_to_array
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
-MODELS_DIR = Path(__file__).parent / "models"
-OMNI_PATH = MODELS_DIR / "omni_convnext.pt"
-IRIS_PATH = MODELS_DIR / "iris_gradient_boosting.joblib"
+HF_REPO_ID = "CorentinHmn/tbs-ia-detector-models"
 
 app = FastAPI(title="TBS AI Image Detector API", version="1.0.0")
 
@@ -50,15 +49,15 @@ iris_model: Optional[Any] = None
 async def load_models() -> None:
     global omni_model, omni_transform, iris_model
 
-    if OMNI_PATH.exists():
+    try:
+        omni_path = hf_hub_download(repo_id=HF_REPO_ID, filename="omni_convnext.pt")
         model = convnext_tiny()
         in_features = model.classifier[-1].in_features
         model.classifier[-1] = nn.Linear(in_features, 1)
-        checkpoint = torch.load(OMNI_PATH, map_location="cpu", weights_only=False)
+        checkpoint = torch.load(omni_path, map_location="cpu", weights_only=False)
         model.load_state_dict(checkpoint["model_state_dict"])
         model.eval()
         omni_model = model
-
         weights = ConvNeXt_Tiny_Weights.DEFAULT
         omni_transform = transforms.Compose([
             transforms.Resize((224, 224)),
@@ -66,14 +65,15 @@ async def load_models() -> None:
             transforms.Normalize(mean=weights.transforms().mean, std=weights.transforms().std),
         ])
         print("[INFO] OMNI (ConvNeXt) loaded.")
-    else:
-        print(f"[WARNING] OMNI model not found at {OMNI_PATH}")
+    except Exception as e:
+        print(f"[WARNING] OMNI model failed to load: {e}")
 
-    if IRIS_PATH.exists():
-        iris_model = joblib.load(IRIS_PATH)
+    try:
+        iris_path = hf_hub_download(repo_id=HF_REPO_ID, filename="iris_gradient_boosting.joblib")
+        iris_model = joblib.load(iris_path)
         print("[INFO] IRIS (Gradient Boosting) loaded.")
-    else:
-        print(f"[WARNING] IRIS model not found at {IRIS_PATH}")
+    except Exception as e:
+        print(f"[WARNING] IRIS model failed to load: {e}")
 
 
 # ── Pydantic response schema ───────────────────────────────────────────────────
