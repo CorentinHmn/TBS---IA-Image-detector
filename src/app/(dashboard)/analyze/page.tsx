@@ -6,7 +6,7 @@ import { LoadingAnalysisSteps } from "@/components/analysis/LoadingAnalysisSteps
 import { ConfidenceMeter } from "@/components/analysis/ConfidenceMeter";
 import { RiskBadge } from "@/components/analysis/RiskBadge";
 import { SignalBreakdown } from "@/components/analysis/SignalBreakdown";
-import { analyzeImageMock } from "@/lib/services/analysis.service";
+import { analyzeImage } from "@/lib/services/analysis.service";
 import type { Analysis } from "@/types";
 import { ScanSearch, Download, Save, RotateCcw, Info, Zap, Eye } from "lucide-react";
 
@@ -46,7 +46,7 @@ export default function AnalyzePage() {
     if (!file) return;
     setStage("analyzing");
     try {
-      const r = await analyzeImageMock(file);
+      const r = await analyzeImage(file);
       setResult(r); setStage("result");
     } catch {
       setErrMsg("Analysis failed. Please try again."); setStage("error");

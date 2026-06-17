@@ -19,7 +19,29 @@ function mockSignals(): AnalysisSignal[] {
   ];
 }
 
-// TODO: Replace with real POST /api/v1/analyze (multipart/form-data) once backend is ready
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+export async function analyzeImage(file: File): Promise<Analysis> {
+  if (!API_URL) return analyzeImageMock(file);
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch(`${API_URL}/analyze`, { method: "POST", body: formData });
+  if (!res.ok) {
+    const detail = await res.text().catch(() => res.statusText);
+    throw new Error(`API error ${res.status}: ${detail}`);
+  }
+
+  const data = await res.json();
+  return {
+    ...data,
+    imageUrl: URL.createObjectURL(file),
+    createdAt: new Date(data.createdAt ?? Date.now()),
+    riskLevel: data.riskLevel as RiskLevel,
+  } satisfies Analysis;
+}
+
 export async function analyzeImageMock(file: File): Promise<Analysis> {
   await delay(3500);
   const probability = Math.floor(Math.random() * 80 + 15);
