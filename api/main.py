@@ -50,7 +50,7 @@ omni_load_error: Optional[str] = None
 
 @app.on_event("startup")
 async def load_models() -> None:
-    global omni_model, omni_transform, iris_model
+    global omni_model, omni_transform, iris_model, iris_feature_cols, iris_load_error, omni_load_error
 
     try:
         omni_path = hf_hub_download(repo_id=HF_REPO_ID, filename="omni_convnext.pt")
@@ -73,7 +73,6 @@ async def load_models() -> None:
         omni_load_error = f"{type(e).__name__}: {e}\n{traceback.format_exc()}"
         print(f"[WARNING] OMNI model failed to load: {omni_load_error}")
 
-    global iris_feature_cols, iris_load_error, omni_load_error
     try:
         iris_path = hf_hub_download(repo_id=HF_REPO_ID, filename="iris_gradient_boosting.joblib")
         loaded = joblib.load(iris_path)
