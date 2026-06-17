@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 4%;
+    --foreground: 220 20% 94%;
+    --card: 225 12% 8%;
+    --card-foreground: 220 20% 94%;
+    --border: 225 12% 13%;
+    --primary: 230 100% 65%;
+    --primary-foreground: 0 0% 100%;
+    --muted: 225 12% 15%;
+    --muted-foreground: 220 10% 55%;
+    --accent: 166 100% 42%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --ring: 230 100% 65%;
+    --radius: 0.5rem;
+    --font-satoshi: 'Satoshi', sans-serif;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: var(--font-satoshi);
+  }
+}
+
+/* Risk colors */
+.risk-low { color: #10B981; }
+.risk-medium { color: #F59E0B; }
+.risk-high { color: #EF4444; }
+
+/* Scan animation */
+@keyframes scan {
+  0% { top: 0%; }
+  100% { top: 100%; }
+}
+.scan-line {
+  animation: scan 2s linear infinite;
+}
