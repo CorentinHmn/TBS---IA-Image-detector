@@ -1,9 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 
-interface ConfidenceMeterProps { score: number; animated?: boolean; }
+interface ConfidenceMeterProps {
+  score: number;
+  animated?: boolean;
+  accentColor?: string;
+}
 
-export function ConfidenceMeter({ score, animated = true }: ConfidenceMeterProps) {
+export function ConfidenceMeter({ score, animated = true, accentColor }: ConfidenceMeterProps) {
   const [display, setDisplay] = useState(animated ? 0 : score);
   useEffect(() => {
     if (!animated) return;
@@ -11,7 +15,8 @@ export function ConfidenceMeter({ score, animated = true }: ConfidenceMeterProps
     return () => clearTimeout(t);
   }, [score, animated]);
 
-  const color = score >= 70 ? "#EF4444" : score >= 40 ? "#F59E0B" : "#10B981";
+  const defaultColor = score >= 70 ? "#EF4444" : score >= 40 ? "#F59E0B" : "#10B981";
+  const color = accentColor ?? defaultColor;
 
   return (
     <div className="space-y-3">

@@ -28,8 +28,8 @@ function mockSignals(): AnalysisSignal[] {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export async function analyzeImage(file: File): Promise<Analysis> {
-  if (!API_URL) return analyzeImageMock(file);
+export async function analyzeImage(file: File, model?: "iris" | "omni"): Promise<Analysis> {
+  if (!API_URL) return analyzeImageMock(file, model);
 
   const formData = new FormData();
   formData.append("file", file);
@@ -49,9 +49,13 @@ export async function analyzeImage(file: File): Promise<Analysis> {
   } satisfies Analysis;
 }
 
-export async function analyzeImageMock(file: File): Promise<Analysis> {
-  await delay(3500);
-  const probability = Math.floor(Math.random() * 80 + 15);
+export async function analyzeImageMock(file: File, model?: "iris" | "omni"): Promise<Analysis> {
+  // Iris is faster; Omni runs a deeper pipeline
+  await delay(model === "iris" ? 2200 : 3800);
+  // Iris: conservative range (classical features); Omni: wider range (neural net)
+  const probability = model === "iris"
+    ? rnd(20, 75)
+    : rnd(15, 95);
   return {
     id: crypto.randomUUID(),
     fileName: file.name,

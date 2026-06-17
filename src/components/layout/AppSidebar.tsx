@@ -1,13 +1,14 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ScanSearch, History, Key, Settings, LogOut, Shield } from "lucide-react";
+import { LayoutDashboard, ScanSearch, GitCompare, History, Key, Settings, LogOut, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { mockUser } from "@/lib/mock-data";
 
 const nav = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/analyze",   icon: ScanSearch,      label: "Analyze"   },
+  { href: "/compare",   icon: GitCompare,      label: "Compare"   },
   { href: "/history",   icon: History,          label: "History"   },
   { href: "/api-keys",  icon: Key,              label: "API Keys"  },
   { href: "/settings",  icon: Settings,         label: "Settings"  },

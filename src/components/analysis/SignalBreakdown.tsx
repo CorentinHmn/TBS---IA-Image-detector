@@ -7,14 +7,14 @@ const statusConfig = {
   inconclusive: { label: "Inconclusive", cls: "text-amber-400"   },
 };
 
-export function SignalBreakdown({ signals }: { signals: AnalysisSignal[] }) {
+export function SignalBreakdown({ signals, accentColor }: { signals: AnalysisSignal[]; accentColor?: string }) {
   return (
     <div className="space-y-3">
       <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">Signal Breakdown</h3>
       <div className="space-y-2">
         {signals.map((s) => {
           const { label, cls } = statusConfig[s.status];
-          const barColor = s.status === "detected" ? "#EF4444" : s.status === "not_detected" ? "#10B981" : "#F59E0B";
+          const barColor = s.status === "not_detected" ? "#10B981" : s.status === "inconclusive" ? "#F59E0B" : (accentColor ?? "#EF4444");
           return (
             <div key={s.id} className="p-3 bg-card rounded-lg border border-border space-y-2">
               <div className="flex items-center justify-between">

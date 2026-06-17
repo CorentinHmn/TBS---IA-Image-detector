@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 const titles: Record<string, string> = {
   "/dashboard": "Dashboard",
   "/analyze":   "Analyze Image",
+  "/compare":   "Compare Models",
   "/history":   "Analysis History",
   "/api-keys":  "API Keys",
   "/settings":  "Settings",
-  "/billing":   "Billing",
 };
 
 export function AppTopbar() {
