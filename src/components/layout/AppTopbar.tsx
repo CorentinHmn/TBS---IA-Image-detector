@@ -15,7 +15,7 @@ const titles: Record<string, string> = {
 export function AppTopbar() {
   const path = usePathname();
   const base = "/" + (path.split("/")[1] ?? "");
-  const title = titles[base] ?? "AI Image Verifier";
+  const title = titles[base] ?? "Prism";
   return (
     <header className="h-16 border-b border-border bg-background/80 backdrop-blur-sm flex items-center justify-between px-6 sticky top-0 z-20">
       <h1 className="text-lg font-semibold text-foreground">{title}</h1>

@@ -12,7 +12,7 @@ export default function LandingPage() {
           <div className="w-7 h-7 rounded-lg bg-[#4F6BFF] flex items-center justify-center">
             <Shield className="w-3.5 h-3.5 text-white" />
           </div>
-          <span className="font-semibold text-sm">AI Image Verifier</span>
+          <span className="font-semibold text-sm">Prism</span>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="ghost" asChild className="text-[#8B92A8] hover:text-[#F0F2F8] text-sm h-9"><Link href="/login">Sign in</Link></Button>
@@ -129,9 +129,9 @@ export default function LandingPage() {
             <div className="w-6 h-6 rounded-md bg-[#4F6BFF] flex items-center justify-center">
               <Shield className="w-3 h-3 text-white" />
             </div>
-            <span className="text-sm font-semibold">AI Image Verifier</span>
+            <span className="text-sm font-semibold">Prism</span>
           </div>
-          <p className="text-xs text-[#8B92A8]">© 2024 AI Image Verifier · Results are probabilistic · Human review recommended</p>
+          <p className="text-xs text-[#8B92A8]">© 2025 Prism · Results are probabilistic · Human review recommended</p>
         </div>
       </footer>
     </div>

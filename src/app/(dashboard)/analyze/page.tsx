@@ -23,7 +23,7 @@ const MODELS: { id: ModelId; name: string; tagline: string; badge: string; icon:
   },
   {
     id: "argus",
-    name: "Argus",
+    name: "Omni",
     tagline: "Deep forensic · Multi-signal · High accuracy",
     badge: "Precision",
     icon: Eye,
