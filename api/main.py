@@ -43,6 +43,9 @@ app.add_middleware(
 omni_model: Optional[nn.Module] = None
 omni_transform: Optional[transforms.Compose] = None
 iris_model: Optional[Any] = None
+iris_feature_cols: Optional[List[str]] = None
+iris_load_error: Optional[str] = None
+omni_load_error: Optional[str] = None
 
 
 @app.on_event("startup")
@@ -66,14 +69,24 @@ async def load_models() -> None:
         ])
         print("[INFO] OMNI (ConvNeXt) loaded.")
     except Exception as e:
-        print(f"[WARNING] OMNI model failed to load: {e}")
+        import traceback
+        omni_load_error = f"{type(e).__name__}: {e}\n{traceback.format_exc()}"
+        print(f"[WARNING] OMNI model failed to load: {omni_load_error}")
 
+    global iris_feature_cols, iris_load_error, omni_load_error
     try:
         iris_path = hf_hub_download(repo_id=HF_REPO_ID, filename="iris_gradient_boosting.joblib")
-        iris_model = joblib.load(iris_path)
+        loaded = joblib.load(iris_path)
+        if isinstance(loaded, dict):
+            iris_model = loaded["model"]
+            iris_feature_cols = loaded.get("feature_cols")
+        else:
+            iris_model = loaded
         print("[INFO] IRIS (Gradient Boosting) loaded.")
     except Exception as e:
-        print(f"[WARNING] IRIS model failed to load: {e}")
+        import traceback
+        iris_load_error = f"{type(e).__name__}: {e}\n{traceback.format_exc()}"
+        print(f"[WARNING] IRIS model failed to load: {iris_load_error}")
 
 
 # ── Pydantic response schema ───────────────────────────────────────────────────
@@ -154,7 +167,10 @@ def run_omni(image: Image.Image) -> float:
 def run_iris(image: Image.Image) -> float:
     assert iris_model is not None
     feats = extract_features(image)
-    X = features_to_array(feats)
+    if iris_feature_cols is not None:
+        X = np.array([[feats.get(c, 0.0) for c in iris_feature_cols]], dtype=np.float64)
+    else:
+        X = features_to_array(feats)
     prob = iris_model.predict_proba(X)[0][1]
     return float(prob)
 
@@ -286,4 +302,17 @@ async def health() -> Dict[str, Any]:
         "status": "ok",
         "omni_loaded": omni_model is not None,
         "iris_loaded": iris_model is not None,
+    }
+
+
+@app.get("/debug")
+async def debug() -> Dict[str, Any]:
+    import sys
+    import sklearn
+    return {
+        "python": sys.version,
+        "sklearn": sklearn.__version__,
+        "omni_error": omni_load_error,
+        "iris_error": iris_load_error,
+        "iris_feature_cols_count": len(iris_feature_cols) if iris_feature_cols else None,
     }
