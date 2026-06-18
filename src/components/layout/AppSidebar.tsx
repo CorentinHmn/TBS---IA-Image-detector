@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ScanSearch, GitCompare, History, Key, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, ScanSearch, GitCompare, History, Key, Settings, LogOut, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { mockUser } from "@/lib/mock-data";
 
@@ -18,6 +18,13 @@ export function AppSidebar() {
   const path = usePathname();
   return (
     <aside className="w-14 h-screen bg-[#050505] border-r border-[#1A1A1A] flex flex-col fixed left-0 top-0 z-30 items-center py-4">
+      {/* Home */}
+      <div className="mb-4 w-full px-2">
+        <Link href="/" title="Back to home" className="w-full flex items-center justify-center h-9 rounded-lg text-[#616161] hover:text-[#F5F5F5] hover:bg-white/5 transition-colors">
+          <ArrowLeft className="w-4 h-4" />
+        </Link>
+      </div>
+
       {/* Nav items */}
       <nav className="flex-1 flex flex-col items-center gap-1 w-full px-2">
         {nav.map((item) => {
