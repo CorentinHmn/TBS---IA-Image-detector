@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { UploadDropzone } from "@/components/analysis/UploadDropzone";
-import { analyzeImageMock } from "@/lib/services/analysis.service";
+import { analyzeImage } from "@/lib/services/analysis.service";
 import type { Analysis } from "@/types";
 import { GitCompare, RotateCcw, Zap, Eye } from "lucide-react";
 
@@ -82,8 +82,8 @@ export default function ComparePage() {
     if (!file) return;
     setStage("analyzing"); setIrisLoading(true); setOmniLoading(true);
     const [iris, omni] = await Promise.all([
-      analyzeImageMock(file, "iris").finally(() => setIrisLoading(false)),
-      analyzeImageMock(file, "omni").finally(() => setOmniLoading(false)),
+      analyzeImage(file, "iris").finally(() => setIrisLoading(false)),
+      analyzeImage(file, "omni").finally(() => setOmniLoading(false)),
     ]);
     setIrisResult(iris); setOmniResult(omni); setStage("result");
   };
