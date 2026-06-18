@@ -34,7 +34,8 @@ export async function analyzeImage(file: File, model?: "iris" | "omni"): Promise
   const formData = new FormData();
   formData.append("file", file);
 
-  const res = await fetch(`${API_URL}/analyze`, { method: "POST", body: formData });
+  const url = model ? `${API_URL}/analyze?model=${model}` : `${API_URL}/analyze`;
+  const res = await fetch(url, { method: "POST", body: formData });
   if (!res.ok) {
     const detail = await res.text().catch(() => res.statusText);
     throw new Error(`API error ${res.status}: ${detail}`);
