@@ -1,40 +1,60 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { UploadDropzone } from "@/components/analysis/UploadDropzone";
-import { ModelColumn } from "@/components/analysis/ModelColumn";
 import { analyzeImageMock } from "@/lib/services/analysis.service";
 import type { Analysis } from "@/types";
-import { GitCompare, RotateCcw, CheckCircle2, AlertTriangle, ShieldAlert } from "lucide-react";
+import { GitCompare, RotateCcw, Zap, Eye } from "lucide-react";
 
 type Stage = "idle" | "selected" | "analyzing" | "result";
+
+function ScoreCard({ name, icon: Icon, score, riskLevel, loading, accentColor }: {
+  name: string;
+  icon: typeof Zap;
+  score: number | null;
+  riskLevel: Analysis["riskLevel"] | null;
+  loading: boolean;
+  accentColor: string;
+}) {
+  const color = riskLevel === "high" ? "#EF4444" : riskLevel === "medium" ? "#F59E0B" : riskLevel === "low" ? "#10B981" : accentColor;
+  const label = riskLevel === "high" ? "Likely AI-generated" : riskLevel === "medium" ? "Inconclusive" : riskLevel === "low" ? "Likely authentic" : "";
+
+  return (
+    <div className="flex-1 bg-card border border-border rounded-xl overflow-hidden">
+      <div className="flex items-center gap-2 px-5 py-3 border-b border-border">
+        <Icon className="w-3.5 h-3.5" style={{ color: accentColor }} />
+        <span className="text-sm font-semibold" style={{ color: accentColor }}>{name}</span>
+      </div>
+      <div className="flex flex-col items-center justify-center py-12 gap-2">
+        {loading ? (
+          <div className="w-5 h-5 border-2 border-border border-t-primary rounded-full animate-spin" />
+        ) : score !== null ? (
+          <>
+            <span className="text-[clamp(3.5rem,10vw,6rem)] font-[800] tracking-[-0.04em] leading-none tabular-nums" style={{ color }}>
+              {score}%
+            </span>
+            <p className="text-xs text-muted-foreground mt-1">{label}</p>
+          </>
+        ) : (
+          <span className="text-muted-foreground text-sm">—</span>
+        )}
+      </div>
+    </div>
+  );
+}
 
 function Consensus({ iris, omni }: { iris: Analysis; omni: Analysis }) {
   const delta = Math.abs(iris.aiProbability - omni.aiProbability);
   const avg = Math.round((iris.aiProbability + omni.aiProbability) / 2);
   const agree = iris.riskLevel === omni.riskLevel;
-
-  if (agree && delta <= 15) {
-    const Icon = avg >= 70 ? ShieldAlert : avg >= 40 ? AlertTriangle : CheckCircle2;
-    const color = avg >= 70 ? "text-red-400 border-red-400/30 bg-red-400/5" : avg >= 40 ? "text-amber-400 border-amber-400/30 bg-amber-400/5" : "text-emerald-400 border-emerald-400/30 bg-emerald-400/5";
-    return (
-      <div className={`flex items-center gap-3 p-4 rounded-xl border ${color}`}>
-        <Icon className="w-5 h-5 flex-shrink-0" />
-        <div>
-          <p className="text-sm font-semibold">Both models agree — {iris.riskLevel.toUpperCase()} RISK</p>
-          <p className="text-xs opacity-70">Average confidence: {avg}% · Δ {delta}pts between models</p>
-        </div>
-      </div>
-    );
-  }
+  const color = avg >= 70 ? "#EF4444" : avg >= 40 ? "#F59E0B" : "#10B981";
 
   return (
-    <div className="flex items-center gap-3 p-4 rounded-xl border border-amber-400/30 bg-amber-400/5 text-amber-400">
-      <AlertTriangle className="w-5 h-5 flex-shrink-0" />
+    <div className="flex items-baseline justify-between px-5 py-4 bg-card border border-border rounded-xl">
       <div>
-        <p className="text-sm font-semibold">Models diverge — manual review recommended</p>
-        <p className="text-xs opacity-70">
-          Iris: {iris.aiProbability}% ({iris.riskLevel}) · Omni: {omni.aiProbability}% ({omni.riskLevel}) · Δ {delta}pts
+        <p className="text-xs text-muted-foreground mb-1">{agree ? "Models agree" : "Models diverge — review recommended"}</p>
+        <p className="text-sm font-semibold text-foreground">
+          Average <span style={{ color }}>{avg}%</span> · Δ {delta}pts
         </p>
       </div>
     </div>
@@ -42,101 +62,78 @@ function Consensus({ iris, omni }: { iris: Analysis; omni: Analysis }) {
 }
 
 export default function ComparePage() {
-  const [stage, setStage]         = useState<Stage>("idle");
-  const [file, setFile]           = useState<File | null>(null);
-  const [preview, setPreview]     = useState<string | null>(null);
-  const [irisResult, setIrisResult] = useState<Analysis | null>(null);
-  const [omniResult, setOmniResult] = useState<Analysis | null>(null);
+  const [stage, setStage]             = useState<Stage>("idle");
+  const [file, setFile]               = useState<File | null>(null);
+  const [preview, setPreview]         = useState<string | null>(null);
+  const [irisResult, setIrisResult]   = useState<Analysis | null>(null);
+  const [omniResult, setOmniResult]   = useState<Analysis | null>(null);
   const [irisLoading, setIrisLoading] = useState(false);
   const [omniLoading, setOmniLoading] = useState(false);
 
   const handleSelect = (f: File) => {
-    setFile(f);
-    setPreview(URL.createObjectURL(f));
-    setStage("selected");
-    setIrisResult(null);
-    setOmniResult(null);
+    setFile(f); setPreview(URL.createObjectURL(f)); setStage("selected");
+    setIrisResult(null); setOmniResult(null);
   };
-
   const handleClear = () => {
-    setFile(null);
-    setPreview(null);
-    setStage("idle");
-    setIrisResult(null);
-    setOmniResult(null);
+    setFile(null); setPreview(null); setStage("idle");
+    setIrisResult(null); setOmniResult(null);
   };
-
   const handleCompare = async () => {
     if (!file) return;
-    setStage("analyzing");
-    setIrisLoading(true);
-    setOmniLoading(true);
-
-    // Run both models in parallel
+    setStage("analyzing"); setIrisLoading(true); setOmniLoading(true);
     const [iris, omni] = await Promise.all([
       analyzeImageMock(file, "iris").finally(() => setIrisLoading(false)),
       analyzeImageMock(file, "omni").finally(() => setOmniLoading(false)),
     ]);
-
-    setIrisResult(iris);
-    setOmniResult(omni);
-    setStage("result");
+    setIrisResult(iris); setOmniResult(omni); setStage("result");
   };
 
   const isAnalyzing = stage === "analyzing";
   const isDone      = stage === "result";
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
-      {/* Header */}
-      {stage === "idle" || stage === "selected" ? (
-        <div>
-          <h2 className="text-xl font-semibold text-foreground mb-1">Compare models</h2>
-          <p className="text-sm text-muted-foreground">
-            Run Iris and Omni in parallel on the same image and compare their signals side-by-side.
-          </p>
-        </div>
-      ) : null}
+    <div className="max-w-2xl mx-auto space-y-4">
 
-      {/* Upload — visible during idle/selected only */}
       {(stage === "idle" || stage === "selected") && (
         <>
-          <UploadDropzone
-            onFileSelect={handleSelect}
-            selectedFile={file}
-            preview={preview}
-            onClear={handleClear}
-          />
+          <UploadDropzone onFileSelect={handleSelect} selectedFile={file} preview={preview} onClear={handleClear} />
           {stage === "selected" && (
             <Button onClick={handleCompare} className="w-full" size="lg">
-              <GitCompare className="w-4 h-4 mr-2" />
-              Run comparison — Iris vs Omni
+              <GitCompare className="w-4 h-4 mr-2" />Run comparison
             </Button>
           )}
         </>
       )}
 
-      {/* Image preview strip during analysis / result */}
       {(isAnalyzing || isDone) && preview && (
-        <div className="rounded-xl overflow-hidden border border-border h-40">
+        <div className="rounded-xl overflow-hidden border border-border h-44">
           <img src={preview} alt="Analyzed image" className="w-full h-full object-cover" />
         </div>
       )}
 
-      {/* Side-by-side columns */}
       {(isAnalyzing || isDone) && (
-        <div className="flex gap-4 items-start flex-col sm:flex-row">
-          <ModelColumn model="iris" result={irisResult} loading={irisLoading} />
-          <ModelColumn model="omni" result={omniResult} loading={omniLoading} />
+        <div className="flex gap-3">
+          <ScoreCard
+            name="Iris" icon={Zap}
+            score={irisResult?.aiProbability ?? null}
+            riskLevel={irisResult?.riskLevel ?? null}
+            loading={irisLoading}
+            accentColor="#4F6BFF"
+          />
+          <ScoreCard
+            name="Omni" icon={Eye}
+            score={omniResult?.aiProbability ?? null}
+            riskLevel={omniResult?.riskLevel ?? null}
+            loading={omniLoading}
+            accentColor="#8B5CF6"
+          />
         </div>
       )}
 
-      {/* Consensus banner */}
       {isDone && irisResult && omniResult && (
         <Consensus iris={irisResult} omni={omniResult} />
       )}
 
-      {/* Reset */}
       {isDone && (
         <Button variant="outline" onClick={handleClear} className="w-full">
           <RotateCcw className="w-4 h-4 mr-2" />Compare another image

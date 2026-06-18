@@ -28,9 +28,6 @@ export default function LandingPage() {
             <Button size="lg" asChild className="bg-[#4F6BFF] hover:bg-[#4F6BFF]/90 text-white h-11 px-8 text-sm font-medium rounded-lg">
               <Link href="/analyze">Start analyzing</Link>
             </Button>
-            <Button size="lg" variant="ghost" asChild className="text-[#616161] hover:text-[#F5F5F5] h-11 px-8 text-sm">
-              <Link href="/dashboard">View demo</Link>
-            </Button>
           </div>
         </div>
       </section>
