@@ -1,28 +1,14 @@
 "use client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Shield } from "lucide-react";
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#050505] text-[#F5F5F5] selection:bg-[#4F6BFF]/30">
 
       {/* Nav */}
-      <nav className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-8 h-14">
-        <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-6 h-6 rounded-md bg-[#4F6BFF] flex items-center justify-center">
-            <Shield className="w-3 h-3 text-white" />
-          </div>
-          <span className="text-sm font-semibold tracking-tight">Prism</span>
-        </Link>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" asChild className="text-[#616161] hover:text-[#F5F5F5] text-sm h-8 px-4">
-            <Link href="/login">Sign in</Link>
-          </Button>
-          <Button size="sm" asChild className="bg-[#4F6BFF] hover:bg-[#4F6BFF]/90 text-white text-sm h-8 px-4 rounded-lg">
-            <Link href="/analyze">Try free</Link>
-          </Button>
-        </div>
+      <nav className="fixed top-0 inset-x-0 z-50 flex items-center px-8 h-14">
+        <span className="text-sm font-semibold tracking-tight">Prism</span>
       </nav>
 
       {/* Hero */}
@@ -82,12 +68,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="px-8 py-10 border-t border-[#1A1A1A] flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-5 h-5 rounded-md bg-[#4F6BFF] flex items-center justify-center">
-            <Shield className="w-2.5 h-2.5 text-white" />
-          </div>
-          <span className="text-sm font-semibold">Prism</span>
-        </div>
+        <span className="text-sm font-semibold">Prism</span>
         <p className="text-xs text-[#616161]">Results are probabilistic · Human review recommended</p>
       </footer>
     </div>
