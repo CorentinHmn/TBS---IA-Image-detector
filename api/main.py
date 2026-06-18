@@ -14,7 +14,7 @@ from typing import Any, Dict, List, Optional
 import joblib
 import numpy as np
 import torch
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import FastAPI, File, HTTPException, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from huggingface_hub import hf_hub_download
 from PIL import Image, ImageFile
@@ -177,7 +177,10 @@ def run_iris(image: Image.Image) -> float:
 # ── Main endpoint ──────────────────────────────────────────────────────────────
 
 @app.post("/analyze", response_model=AnalysisResponse)
-async def analyze(file: UploadFile = File(...)) -> AnalysisResponse:
+async def analyze(
+    file: UploadFile = File(...),
+    model: Optional[str] = Query(default=None, pattern="^(iris|omni|both)$"),
+) -> AnalysisResponse:
     if omni_model is None and iris_model is None:
         raise HTTPException(status_code=503, detail="No models loaded. Check server logs.")
 
@@ -197,13 +200,16 @@ async def analyze(file: UploadFile = File(...)) -> AnalysisResponse:
 
     start = time.perf_counter()
 
+    use_omni = model != "iris" and omni_model is not None
+    use_iris  = model != "omni" and iris_model is not None
+
     omni_prob: Optional[float] = None
     iris_prob: Optional[float] = None
 
-    if omni_model is not None:
+    if use_omni:
         omni_prob = run_omni(image)
 
-    if iris_model is not None:
+    if use_iris:
         iris_prob = run_iris(image)
 
     # Combined score — OMNI is more reliable (96.9% vs 94.7%)
