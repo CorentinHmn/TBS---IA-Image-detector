@@ -17,9 +17,9 @@ export default function LandingPage() {
           <p className="text-xs font-medium tracking-[0.12em] uppercase text-[#616161] mb-8">
             Forensic AI image detection
           </p>
-          <h1 className="text-[clamp(2.6rem,6vw,5.5rem)] font-[800] tracking-[-0.04em] leading-[0.98] mb-8 text-[#F5F5F5] max-w-4xl">
-            Pour les boomers qui savent pas différencier une photo IA d&apos;une{" "}
-            <span className="text-[#4F6BFF]">vraie photo.</span>
+          <h1 className="text-[clamp(3.5rem,9vw,8rem)] font-[800] tracking-[-0.04em] leading-[0.92] mb-8 text-[#F5F5F5]">
+            The image looks real.<br />
+            <span className="text-[#4F6BFF]">Is it?</span>
           </h1>
           <p className="text-lg text-[#616161] max-w-lg leading-relaxed mb-12 font-[400]">
             Probabilistic forensic analysis to identify AI-generated images. Built for teams who need auditable results.
